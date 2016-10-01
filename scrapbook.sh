@@ -32,15 +32,19 @@ do
 key="$1"
 
 case $key in
-    -t|--target)
+    -s|--SOURCE)
     SOURCE="$2"
+    shift # past argument
+    ;;
+    -t|--target)
+    TARGET="$2"
     shift # past argument
     ;;
     -q|--quality)
     QUALITY="$2"
     shift # past argument
     ;;
-    -s|--size)
+    -r|--resolution)
     SIZE="$2"
     shift # past argument
     ;;
@@ -57,30 +61,36 @@ done
 QUALITY="${QUALITY}"
 SIZE="${SIZE}"
 SOURCE="${SOURCE}"
+TARGET="${TARGET}"
 
+# expand file paths
+mkdir $TARGET
+ORG_DIR=$(cd $SOURCE; pwd)
+TRG_DIR=$(cd $TARGET; pwd)
 
-# Target directory
-targetDir=$SOURCE
+# copy files
+echo copying files to $TRG_DIR...
+cp -R $ORG_DIR/* $TRG_DIR
 
 # maximum width in pixels
 maxWidth=$2
 
 # print initial directory size 
-echo Inital size is $(printSize $targetDir)...
-echo $targetDir
+echo Inital size is $(printSize $ORG_DIR)...
+echo $ORG_DIR
 
 # scale down 
 echo Resizing images...
-mogrify -resize $SIZE "$targetDir/*"  # no trailing slash on targetDir!
+mogrify -strip -interlace Plane -resize  $SIZE "$TRG_DIR/*"  -quality 100 # no trailing slash on SOURCE!
 echo Resizing done. 
 
 # print directory size after scaling
-echo Directory size after resizing is $(printSize $targetDir)...
+echo Directory size after resizing is $(printSize $ORG_DIR)...
 
 # compress files
-echo compressing images
-find $targetDir -iname "*.jpg" -exec jpegoptim -m$QUALITY -o -p   {} \;
+echo compressing images...
+find $TRG_DIR -iname "*.jpg" -exec jpegoptim -m$QUALITY -o -p   {} \;
 echo compressing done.
 
 # print directory size after compressing
-echo Final directory size is $(printSize $targetDir)
+echo Final directory size is $(printSize $TRG_DIR)
