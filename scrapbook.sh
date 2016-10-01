@@ -24,18 +24,54 @@ function printSize {
 }
 
 
+# ------------------------------------------------------------------
+# Options
+# ------------------------------------------------------------------
+while [[ $# -gt 1 ]]
+do
+key="$1"
+
+case $key in
+    -t|--target)
+    SOURCE="$2"
+    shift # past argument
+    ;;
+    -q|--quality)
+    QUALITY="$2"
+    shift # past argument
+    ;;
+    -s|--size)
+    SIZE="$2"
+    shift # past argument
+    ;;
+    --default)
+    DEFAULT=YES
+    ;;
+    *)
+            # unknown option
+    ;;
+esac
+shift # past argument or value
+done
+
+QUALITY="${QUALITY}"
+SIZE="${SIZE}"
+SOURCE="${SOURCE}"
+
+
 # Target directory
-targetDir=$1
+targetDir=$SOURCE
 
 # maximum width in pixels
 maxWidth=$2
 
 # print initial directory size 
 echo Inital size is $(printSize $targetDir)...
+echo $targetDir
 
 # scale down 
 echo Resizing images...
-mogrify -resize $2 "$targetDir/*"  # no trailing slash on targetDir!
+mogrify -resize $SIZE "$targetDir/*"  # no trailing slash on targetDir!
 echo Resizing done. 
 
 # print directory size after scaling
@@ -43,7 +79,7 @@ echo Directory size after resizing is $(printSize $targetDir)...
 
 # compress files
 echo compressing images
-find $targetDir -iname "*.jpg" -exec jpegoptim -m$3 -o -p   {} \;
+find $targetDir -iname "*.jpg" -exec jpegoptim -m$QUALITY -o -p   {} \;
 echo compressing done.
 
 # print directory size after compressing
