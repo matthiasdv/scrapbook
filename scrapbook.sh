@@ -32,7 +32,7 @@ do
 key="$1"
 
 case $key in
-    -s|--SOURCE)
+    -s|--source)
     SOURCE="$2"
     shift # past argument
     ;;
