@@ -1,7 +1,7 @@
 # Scrapbook.sh
 
 This script prepares JPEG files for archiving, reducing the filesize as much as possible. 
->* Images are resized to maximum resolution
+>* Images are resized to a desired maximum resolution
 >* JPEG optimization is applied 
 
 ##Options
